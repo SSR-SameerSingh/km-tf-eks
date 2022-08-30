@@ -1,0 +1,8 @@
+cluster_name="km-demo-eks-2"
+project_name="defaultproject"
+blueprint="default"
+blueprint_version = "1.17.0"
+cloud_credential="km-role"
+aws_region="us-west-2"
+k8s_version="1.21"
+instance_type="t3.xlarge"
