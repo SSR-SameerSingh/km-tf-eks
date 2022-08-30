@@ -1,4 +1,4 @@
-cluster_name="km-demo-eks-3"
+cluster_name="km-demo-eks-4"
 project_name="defaultproject"
 blueprint="default"
 blueprint_version = "1.17.0"
