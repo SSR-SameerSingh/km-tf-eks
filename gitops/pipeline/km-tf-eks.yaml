@@ -1,0 +1,87 @@
+apiVersion: gitops.k8smgmt.io/v3
+kind: Pipeline
+metadata:
+  name: km-tf-eks
+  project: defaultproject
+spec:
+  active: true
+  sharing:
+    enabled: false
+  stages:
+  - config:
+      action:
+        action: Plan
+        backendVars:
+        - key: key
+          type: Plain
+          value: '{{ .trigger.message }}'
+        refresh: true
+      agents:
+      - name: km-docker
+      persistWorkingDirectory: true
+      provisioner: km-tf-eks
+      revision: main
+      type: Terraform
+    name: plan
+    next:
+    - name: apply
+    preConditions:
+    - config: '"terraform/delete" not in trigger.isDeleted'
+      type: Expression
+    type: InfraProvisioner
+  - config:
+      action:
+        action: Apply
+        backendVars:
+        - key: key
+          type: Plain
+          value: '{{ .trigger.message }}'
+        refresh: true
+      agents:
+      - name: km-docker
+      provisioner: km-tf-eks
+      revision: main
+      type: Terraform
+      workingDirectory: plan
+    name: apply
+    next:
+    - name: destroy
+    preConditions:
+    - config: '"terraform/delete" not in trigger.isDeleted'
+      type: Expression
+    type: InfraProvisioner
+  - config:
+      action:
+        action: Destroy
+        backendVars:
+        - key: key
+          type: Plain
+          value: '{{ .trigger.message }}'
+        refresh: true
+      agents:
+      - name: km-docker
+      provisioner: km-tf-eks
+      revision: main
+      type: Terraform
+    name: destroy
+    preConditions:
+    - config: '"terraform/delete" in trigger.isDeleted'
+      type: Expression
+    type: InfraProvisioner
+  triggers:
+  - config:
+      repo:
+        paths:
+        - name: terraform
+        provider: Github
+        repository: km-eks-tf
+        revision: main
+    name: km-tf-eks
+    type: Webhook
+    variables:
+    - name: message
+      type: String
+      value: trigger.payload.commits[0].message
+    - name: isDeleted
+      type: List
+      value: trigger.payload.commits[0].modified
