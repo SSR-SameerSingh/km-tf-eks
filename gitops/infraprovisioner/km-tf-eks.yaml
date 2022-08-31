@@ -1,0 +1,32 @@
+apiVersion: gitops.k8smgmt.io/v3
+kind: InfraProvisioner
+metadata:
+  name: km-tf-eks
+  project: defaultproject
+spec:
+  config:
+    envVars:
+    - key: AWS_ACCESS_KEY_ID
+      type: Secure
+      value: abcd
+    - key: AWS_SECRET_ACCESS_KEY
+      type: Secure
+      value: abcd
+    - key: RCTL_REST_ENDPOINT
+      type: Plain
+      value: console.rafay.dev
+    - key: RCTL_API_KEY
+      type: Secure
+      value: abcd
+    - key: RCTL_API_SECRET
+      type: Secure
+      value: abcd
+    - key: RCTL_PROJECT
+      type: Plain
+      value: defaultproject
+    version: 1.0.0
+  folder:
+    name: terraform
+  repository: km-eks-tf
+  revision: main
+  type: Terraform
